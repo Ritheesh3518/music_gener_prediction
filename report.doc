@@ -1,0 +1,75 @@
+## Report on Music Genre Classification Project
+### Libraries Used
+    numpy: A fundamental Python library for numerical computing. It provides support for large, multi-dimensional arrays and matrices and includes a collection of mathematical functions to operate on these data structures efficiently, enabling scientific computing and data manipulation tasks.
+
+    librosa: A Python package developed for music and audio analysis. It offers tools to extract audio features like mel-frequency cepstral coefficients (MFCC), chroma, and spectral contrast, facilitating audio signal processing and analysis, widely used in music information retrieval and sound classification.
+
+    pydub: A simple and easy-to-use Python library for audio manipulation. It provides functionality to load, manipulate, and export audio files in various formats, ensuring consistent audio processing by converting audio to standard sample rates and channels. Pydub depends on ffmpeg for audio decoding.
+
+    scikit-learn: An open-source machine learning library in Python offering simple, efficient tools for data mining and analysis. It supports tasks such as classification, regression, clustering, dimensionality reduction, and model selection, integrating tightly with numpy and scipy for robust scientific computing.
+
+    joblib: A Python library used primarily for lightweight pipelining and persistence. It efficiently serializes Python objects like trained models to disk and loads them back, enabling model reuse and saving expensive computations during iterative development and deployment.
+
+    matplotlib / seaborn: Matplotlib is a foundational Python library for creating static, animated, and interactive visualizations. Seaborn builds on matplotlib to provide a high-level interface for drawing attractive statistical graphics, simplifying complex plots and enhancing visual clarity.
+
+ffmpeg: An open-source, cross-platform multimedia framework used to decode, encode, transcode, mux, demux, stream, filter, and play audio and video files. It is a required backend tool for libraries such as PyDub to handle audio file processing and conversion.
+### Dataset Description
+
+The GTZAN dataset (available at [Kaggle GTZAN Dataset](https://www.kaggle.com/datasets/andradaolteanu/gtzan-dataset-music-genre-classification)) is a widely used benchmark dataset for music genre classification. It features:
+
+- 10 genres: Blues, Classical, Country, Disco, Hip-hop, Jazz, Metal, Pop, Reggae, and Rock.
+- 1000 audio tracks: 100 tracks per genre.
+- Audio format: WAV files, each 30 seconds long.
+- Sampling parameters: 22,050 Hz sampling rate commonly used for processing.
+- The dataset folder structure organizes audio files into folders named by genre.
+- The dataset is ideal for ML and audio signal processing tasks.
+
+### Features Extracted
+
+- Mel-Frequency Cepstral Coefficients (MFCCs): 40 coefficients per frame averaged over time for each audio clip.
+- MFCCs summarize the short-time power spectrum of sound, capturing timbral texture and are a strong feature for music genre classification.
+- Audio loading is standardized using PyDub to a sample rate of 22050 Hz and fixed 30-second duration by padding/truncation.
+  
+Additional features that can be explored but not implemented here:
+- Chroma features
+- Spectral contrast
+- Tonnetz (tonal centroid features)
+
+### Errors Encountered and Resolutions
+
+1. FFmpeg Input Error:
+   - Error message:  
+     ```
+     Error opening input file ... Invalid data found when processing input
+     ```
+   - Cause: File may be corrupted, unreadable, or not a valid audio file.
+   - Resolution: 
+     - Verify the integrity of `.wav` files in the dataset.
+     - Skip or exclude corrupted files to continue processing others.
+     - Ensure FFmpeg is installed correctly and available in system PATH for PyDub.
+     - Use correct file format; avoid non-WAV or unsupported formats.
+   
+2. FFmpeg Not Found or PyDub Warning:
+   - Symptoms: PyDub cannot find ffmpeg or ffprobe.
+   - Cause: FFmpeg binaries not installed or not in PATH.
+   - Resolution:
+     - Install FFmpeg (via Homebrew on macOS, apt on Linux, or download binaries on Windows).
+     - Add FFmpeg bin directory to system PATH.
+     - Explicitly specify the path in code using:
+       ```python
+       from pydub.utils import which
+       AudioSegment.converter = which("ffmpeg")
+       ```
+
+3. Audio Loading and Duration Issues:
+   - Sometimes audio length varies or is shorter than expected.
+   - Resolution:
+     - Use padding/truncation logic (already implemented) to fix audio length.
+     - Convert audio to mono with a consistent sample rate using PyDub before MFCC extraction.
+
+4. Model Performance Variance:
+   - Some genres have lower classification accuracy and recall.
+   - Resolution:
+     - Consider data augmentation or additional audio features.
+     - Experiment with deep learning models or ensemble methods.
+     - Hyperparameter tuning (implemented via GridSearchCV) improves but cannot fully fix data imbalance or overlap.
