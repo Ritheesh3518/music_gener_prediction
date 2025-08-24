@@ -75,7 +75,8 @@ pip install -r requirements.txt
 2. Edit the `audio_path` in `main.py` if necessary.
 3. Run:
    ```bash
-   python main.py
+   python3 main.py
+   python3 -m streamlit run app.py
    ```
 4. You’ll see classification reports and confusion matrices for each model.
 5. The tuned best model, scaler, and label encoder will be saved as `.joblib` files.
